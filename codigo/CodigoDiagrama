@@ -1,0 +1,66 @@
+classDiagram
+    class Cliente {
+        String id
+        String nome
+        List~Veiculo~ veiculos
+        +adicionarVeiculo(Veiculo veiculo)
+    }
+    
+    class Veiculo {
+        String placa
+        Cliente cliente
+    }
+    
+    class Fatura {
+        Veiculo veiculo
+        int tempoOcupacao
+        double valor
+        double valorLimite
+        +calcularCobranca()
+    }
+    
+    class Vaga {
+        String identificador
+        boolean ocupada
+        Veiculo veiculo
+        +ocuparVaga(Veiculo veiculo)
+        +liberarVaga()
+        +calcularTarifa()
+    }
+    
+    class VagaRegular {
+        +calcularTarifa()
+    }
+
+    class VagaIdoso {
+        +calcularTarifa() : 15% desconto
+    }
+
+    class VagaPCD {
+        +calcularTarifa() : 13% desconto
+        +espaçoAdicional()
+    }
+
+    class VagaVIP {
+        +calcularTarifa() : 20% mais caro
+        +proximidadePortao()
+        +cobertura()
+    }
+    
+    class Estacionamento {
+        String nome
+        List~Vaga~ vagas
+        int NumeroPredeterminadoVagas
+        +buscarVagaLivre()
+        +registrarEntrada(Cliente cliente, Veiculo veiculo)
+        +registrarSaida(Veiculo veiculo)
+    }
+
+    Cliente "1" --> "N" Veiculo : possui
+    Veiculo "1" --> "1" Fatura : gera
+    Fatura "1" --> "1" Vaga : estacionado em
+    Estacionamento "1" --> "N" Vaga : possui
+    Vaga <|-- VagaRegular
+    Vaga <|-- VagaIdoso
+    Vaga <|-- VagaPCD
+    Vaga <|-- VagaVIP
