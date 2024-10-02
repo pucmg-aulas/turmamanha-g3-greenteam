@@ -1,20 +1,48 @@
 package JavaLabExercicio;
 
+import java.util.*;
+
 public class Estacionamento {
     private String nome;
-    private Vagas[] vagasEstacionamento;
-    int numeroPreDeterminadoVagas;
+    private List<Vagas> vagas;
+    private int numeroPreDeterminadoVagas;
 
-    public Estacionamento(String nome, Vagas[] vagasEstacionamento) {
-        this.nome = nome;
-        this.vagasEstacionamento = vagasEstacionamento;
+    public String getNome() {
+        return nome;
     }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public List<Vagas> getVagas() {
+        return vagas;
+    }
+
+    public void setVagas(List<Vagas> vagas) {
+        this.vagas = vagas;
+    }
+
+    public int getNumeroPreDeterminadoVagas() {
+        return numeroPreDeterminadoVagas;
+    }
+
+    public void setNumeroPreDeterminadoVagas(int numeroPreDeterminadoVagas) {
+        this.numeroPreDeterminadoVagas = numeroPreDeterminadoVagas;
+    }
+
+    public Estacionamento(String nome, int numeroPreDeterminadoVagas) {
+        this.nome = nome;
+        this.numeroPreDeterminadoVagas = numeroPreDeterminadoVagas;
+        this.vagas = new ArrayList<>();
+    }
+
 
     public void adicionarVaga(Vagas vaga) {
 
     }
 
-    public Vagas encontrarVagaLivre(){
+    public Vagas encontrarVagaLivre() {
         return null;
     }
 
@@ -23,10 +51,7 @@ public class Estacionamento {
     }
 
     public void liberarVaga(Vagas vaga) {
-
     }
 
-    public Vagas[] getVagasEstacionamento() {
-        return vagasEstacionamento;
-    }
+
 }

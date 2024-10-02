@@ -1,15 +1,18 @@
 package JavaLabExercicio;
 
-import java.util.Date;
 
 public class VagaPCD extends Vagas {
-    public VagaPCD(String identificador) {
+    private boolean espacoAdicional;
+
+    public VagaPCD(String identificador, boolean espacoAdicional) {
         super(identificador);
+        this.espacoAdicional = espacoAdicional;
     }
 
-    public double calcularTarifa(Date TempoInicial, Date TempoFinal) {
-
-        return 0;
+    @Override
+    public double calcularTarifa() {
+        // Implementar tarifa com 13% de desconto para Vaga PCD
+        return super.calcularTarifa() * 0.87;
     }
 
     // colocar metodo de espaço adicional

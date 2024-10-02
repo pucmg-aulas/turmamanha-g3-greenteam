@@ -1,15 +1,25 @@
 package JavaLabExercicio;
 
-import java.util.Date;
+class VagaVIP extends Vagas {
+    private boolean cobertura;
 
-public class VagaVIP extends Vagas{
-    public VagaVIP(String identificador) {
+    public boolean isCobertura() {
+        return cobertura;
+    }
+
+    public void setCobertura(boolean cobertura) {
+        this.cobertura = cobertura;
+    }
+
+    public VagaVIP(String identificador, boolean cobertura) {
         super(identificador);
+        this.cobertura = cobertura;
     }
-    public double calcularTarifa(Date TempoInicial, Date TempoFinal) {
 
-        return 0;
+    @Override
+    public double calcularTarifa() {
+        // Implementar tarifa 20% mais cara para Vaga VIP
+        return super.calcularTarifa() * 1.2;
     }
-    //colocar cobertura
-    //colocar Proximidade do portão
 }
+
