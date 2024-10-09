@@ -4,7 +4,7 @@ public class VagaPCD extends Vaga {
     private boolean espacoAdicional;
 
     public VagaPCD(String identificador) {
-        super(identificador, 10.0); // Definindo tarifa base
+        super(identificador, 10.0 * 0.87); // Definindo tarifa base como 10 e multiplicando pelo valor adequado pelo tipo dela
         this.espacoAdicional = true;
     }
 

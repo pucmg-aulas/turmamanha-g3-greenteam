@@ -3,7 +3,7 @@ package CodigoJavaParkings;
 public class VagaRegular extends Vaga {
 
     public VagaRegular(String identificador) {
-        super(identificador, 10.0); // Definindo tarifa base
+        super(identificador, 10.0); // Definindo tarifa base como 10
     }
 
     @Override

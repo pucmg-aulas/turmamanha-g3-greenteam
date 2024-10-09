@@ -41,24 +41,10 @@ public class Fatura {
         this.valorLimite = valorLimite;
     }
 
-    public Veiculo getVeiculo() {
-        return veiculo;
-    }
-
-    public void setVeiculo(Veiculo veiculo) {
-        this.veiculo = veiculo;
-    }
-
-    public Fatura(Veiculo veiculo, Date tempoInicio, Date tempoFim) {
+    public Fatura(Veiculo veiculo, Date tempoInicio, Date tempoFim, Double valor) {
         this.veiculo = veiculo;
         this.tempoInicio = tempoInicio;
         this.tempoFim = tempoFim;
-    }
-
-    public double calcularCobranca(double valor, double valorLimite) {
         this.valor = valor;
-        this.valorLimite = valorLimite;
-
-        return valor * valorLimite;
     }
 }

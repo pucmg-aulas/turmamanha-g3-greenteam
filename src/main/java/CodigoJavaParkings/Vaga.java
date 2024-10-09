@@ -58,10 +58,10 @@ public abstract class Vaga {
         this.tarifaBase = tarifaBase;
     }
 
-    public Vaga(String identificador, double tarifaBase) {
+    public Vaga(String identificador, double tarifa) {
         this.identificador = identificador;
         this.ocupada = false;
-        this.tarifaBase = tarifaBase;
+        this.tarifaBase = tarifa;
     }
 
     public void ocuparVaga(Veiculo veiculo) {
