@@ -6,13 +6,13 @@ Mantenha neste diretório todo o código fonte do projeto.
 
 O projeto é composto pelas seguintes classes principais:
 
-1. **Cliente.java**: Representa um cliente do estacionamento, contendo atributos como nome, CPF e informações pessoais relevantes.
+1. **Cliente.java**: Representa um cliente do estacionamento.
 
-1. **Veiculo.java**: Define os veículos que pertencem aos clientes, com atributos como placa, modelo, cor, etc.
+1. **Veiculo.java**: Define os veículos que pertencem aos clientes.
 
-1. **Estacionamento.java**: Responsável por gerenciar o estacionamento como um todo, incluindo controle das vagas disponíveis, ocupadas e a emissão de faturas.
+1. **Estacionamento.java**: Responsável por gerenciar o estacionamento como um todo.
 
-1. **Fatura.java**: Define a estrutura para geração de faturas, calculando o valor a ser cobrado pelo uso das vagas do estacionamento.
+1. **Fatura.java**: Define a estrutura para geração de faturas.
 
 1. **Vaga.java**: Classe genérica que representa uma vaga no estacionamento. Outras classes especializadas herdam dessa, como:
 
