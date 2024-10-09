@@ -10,6 +10,7 @@ Este repositório será atualizado periodicamente a medida que novas entregas s�
 * Pedro Augusto Sodre de Oliveira
 * Rodrigo Franchini Cecchin
 * Thomas Ramos Oliveira
+* Vinícius Zegarra Palhares
 
 ## Professor responsável 
 
