@@ -42,20 +42,32 @@ public class Estacionamento {
     public void gerarVagas() {
         char fila = 'A'; // Fila começa pela identificação 'A'
         int numeroVaga = 1; // Contador para o número de vagas
-
+    
         for (int i = 0; i < numeroPreDeterminadoVagas; i++) {
-            String identificador = fila + String.format("%02d", numeroVaga); //Ajusta o identificador de cada vaga para um formato alfanumérico
-            Vaga vaga = new VagaRegular(identificador);
+            String identificador = fila + String.format("%02d", numeroVaga); 
+        
+            Vaga vaga;
+            if (i < numeroPreDeterminadoVagas * 0.10) {
+                vaga = new VagaVIP(identificador); // 10% VIP
+            } else if (i < numeroPreDeterminadoVagas * 0.20) {
+                vaga = new VagaIdoso(identificador); // 10% Idoso
+            } else if (i < numeroPreDeterminadoVagas * 0.30) {
+                vaga = new VagaPCD(identificador); // 10% PCD
+            } else {
+                vaga = new VagaRegular(identificador); // 70% Regular
+            }
+    
             vagas.add(vaga);
-
+    
             numeroVaga++;
             if (numeroVaga > 20) { // Limita o número de vagas por fila a 20
                 numeroVaga = 1;
                 fila++;
             }
         }
-
     }
+    
+
 
     public Vaga encontrarVagaLivre() {
         for (Vaga vaga : vagas) {
@@ -110,7 +122,6 @@ public class Estacionamento {
         writer.close();
     }
 
-
     // Ler as vagas de um arquivo texto
     public void lerVagasDeArquivo(String caminhoArquivo) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(caminhoArquivo));
@@ -156,8 +167,4 @@ public class Estacionamento {
         }
         reader.close();
     }
-
 }
-
-
-
