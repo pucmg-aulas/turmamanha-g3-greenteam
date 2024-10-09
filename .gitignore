@@ -5,3 +5,6 @@ desktop.ini
 *.iws
 *.iml
 *.ipr
+
+### Output ###
+out
