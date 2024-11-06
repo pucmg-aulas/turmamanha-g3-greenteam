@@ -47,6 +47,35 @@ public class FaturaDAOImpl implements FaturaDAO {
         return faturas;
     }
 
+    @Override
+    public List<Fatura> buscarPorDataEPlaca(Date dataInicio, Date dataFim, String placa) {
+        List<Fatura> faturasFiltradas = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
+            String linha;
+            while ((linha = reader.readLine()) != null) {
+                Fatura fatura = converterLinhaParaFatura(linha);
+                if (fatura != null) {
+                    // Verifica se a fatura está no intervalo de datas e se a placa do veículo corresponde
+                    if (isDentroDoIntervalo(fatura.getTempoInicio(), fatura.getTempoFim(), dataInicio, dataFim) &&
+                        fatura.getVeiculo().getPlaca().equals(placa)) {
+                        faturasFiltradas.add(fatura);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return faturasFiltradas;
+    }
+
+    // Método auxiliar para verificar se a fatura está dentro do intervalo de datas
+    private boolean isDentroDoIntervalo(Date tempoInicio, Date tempoFim, Date dataInicio, Date dataFim) {
+        return (tempoInicio.after(dataInicio) || tempoInicio.equals(dataInicio)) &&
+               (tempoFim.before(dataFim) || tempoFim.equals(dataFim));
+    }
+
     // Auxiliar para converter uma linha de texto em um objeto Fatura
     private Fatura converterLinhaParaFatura(String linha) {
         String[] dados = linha.split(","); // Divide a linha em partes
