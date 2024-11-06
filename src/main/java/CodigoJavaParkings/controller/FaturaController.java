@@ -6,6 +6,7 @@ import model.Veiculo;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FaturaController {
     private FaturaDAO faturaDAO;  // Dependência do DAO para persistir as faturas
@@ -41,5 +42,17 @@ public class FaturaController {
     // Método para buscar todas as faturas
     public List<Fatura> buscarFaturas() {
         return faturaDAO.buscarTodas();  // Retorna todas as faturas salvas
+    }
+
+    // Método para buscar faturas por data e placa
+    public List<Fatura> buscarFaturasPorDataEPlaca(Date dataInicio, Date dataFim, String placa) {
+        // Obtém todas as faturas
+        List<Fatura> todasFaturas = faturaDAO.buscarTodas();
+
+        // Filtra as faturas por data e placa usando Stream API
+        return todasFaturas.stream()
+                .filter(fatura -> !fatura.getTempoInicio().before(dataInicio) && !fatura.getTempoFim().after(dataFim))
+                .filter(fatura -> fatura.getVeiculo().getPlaca().equalsIgnoreCase(placa))
+                .collect(Collectors.toList());
     }
 }
