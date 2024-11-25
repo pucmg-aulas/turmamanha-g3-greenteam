@@ -5,7 +5,6 @@ import dao.FaturaDAO;
 import dao.FaturaDAOImpl;
 
 import java.util.List;
-import java.util.Date;
 import java.util.Calendar;
 
 public class ArrecadacaoController {

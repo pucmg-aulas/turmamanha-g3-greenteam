@@ -11,4 +11,8 @@ public class VagaIdoso extends Vaga {
         // Aplica 15% de desconto para Vaga Idoso
         return getTarifaBase() * 0.85;
     }
+    @Override
+    public String getTipoVaga() {
+        return "idoso";
+    }
 }

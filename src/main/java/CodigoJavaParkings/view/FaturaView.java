@@ -1,81 +1,57 @@
-
+package view;
 
 import controller.FaturaController;
 import model.Fatura;
-import model.Veiculo;
-
 import javax.swing.*;
 import java.awt.*;
-import java.util.Date;
-import java.util.List;
 
 public class FaturaView extends JFrame {
-    private FaturaController faturaController;
 
-    public FaturaView(FaturaController faturaController) {
-        this.faturaController = faturaController;
-        setTitle("Faturas - Estacionamento");
+    private Fatura fatura;
+
+    public FaturaView(Fatura fatura) {
+        this.fatura = fatura;
+
+        // Configuração da janela
+        setTitle("Fatura - Estacionamento Xulambs");
         setSize(400, 300);
-        setLocationRelativeTo(null); // Centraliza a janela na tela
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Fecha a janela sem fechar o aplicativo
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout());
 
-        // Configuração da interface gráfica
-        setLayout(new FlowLayout());
+        // Painel de exibição
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(6, 2)); // Ajustado para 6 linhas, incluindo um campo adicional para 'ID do Estacionamento'
 
-        JButton gerarFaturaButton = new JButton("Gerar Fatura");
-        gerarFaturaButton.addActionListener(e -> gerarFatura());
+        // Exibe os dados da fatura
+        panel.add(new JLabel("Placa do Veículo:"));
+        panel.add(new JLabel(fatura.getVeiculo().getPlaca() != null ? fatura.getVeiculo().getPlaca() : "N/A"));
 
-        JButton listarFaturasButton = new JButton("Listar Faturas");
-        listarFaturasButton.addActionListener(e -> listarFaturas());
+        panel.add(new JLabel("Tipo de Vaga:"));
+        panel.add(new JLabel(fatura.getTipoVaga() != null ? fatura.getTipoVaga().toString() : "N/A"));
 
-        add(gerarFaturaButton);
-        add(listarFaturasButton);
+        panel.add(new JLabel("Data de Entrada:"));
+        panel.add(new JLabel(fatura.getTempoInicio() != null ? fatura.getTempoInicio().toString() : "N/A"));
+
+        panel.add(new JLabel("Data de Saída:"));
+        panel.add(new JLabel(fatura.getTempoFim() != null ? fatura.getTempoFim().toString() : "N/A"));
+
+        panel.add(new JLabel("Valor Total:"));
+        panel.add(new JLabel(String.format("R$ %.2f", fatura.getValor() != null ? fatura.getValor() : 0.0)));
+
+        // Adicionando ID do Estacionamento
+        panel.add(new JLabel("ID do Estacionamento:"));
+        panel.add(new JLabel(String.valueOf(fatura.getIdEstacionamento())));
+
+        add(panel, BorderLayout.CENTER);
+
+        // Botão para fechar a fatura
+        JButton btnFechar = new JButton("Fechar");
+        btnFechar.addActionListener(e -> dispose());
+        add(btnFechar, BorderLayout.SOUTH);
     }
 
-    // Método para gerar uma fatura
-    private void gerarFatura() {
-        String placa = JOptionPane.showInputDialog("Digite a placa do veículo:");
+    public FaturaView(FaturaController faturaController, int id) {
 
-        // Criação do veículo
-        Veiculo veiculo = new Veiculo(placa);
-
-        // Coleta as datas de início e fim
-        String dataEntradaStr = JOptionPane.showInputDialog("Digite a data de entrada (dd/MM/yyyy):");
-        String dataSaidaStr = JOptionPane.showInputDialog("Digite a data de saída (dd/MM/yyyy):");
-
-        // Parse das datas
-        Date tempoInicio = parseDate(dataEntradaStr);
-        Date tempoFim = parseDate(dataSaidaStr);
-
-        // Gerar a fatura
-        Fatura fatura = faturaController.gerarFatura(veiculo, tempoInicio, tempoFim);
-
-        // Exibir a fatura gerada
-        JOptionPane.showMessageDialog(this, "Fatura gerada com sucesso!\n" + fatura);
-    }
-
-    // Método para listar todas as faturas geradas
-    private void listarFaturas() {
-        List<Fatura> faturas = faturaController.buscarFaturas();
-
-        if (faturas.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Nenhuma fatura encontrada.");
-        } else {
-            StringBuilder sb = new StringBuilder("Faturas geradas:\n");
-            for (Fatura fatura : faturas) {
-                sb.append(fatura.toString()).append("\n");
-            }
-            JOptionPane.showMessageDialog(this, sb.toString());
-        }
-    }
-
-    // Método para fazer o parsing da data de entrada
-    private Date parseDate(String dateStr) {
-        try {
-            return new java.text.SimpleDateFormat("dd/MM/yyyy").parse(dateStr);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Data inválida!");
-            return null;
-        }
     }
 }

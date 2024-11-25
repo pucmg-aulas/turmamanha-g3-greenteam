@@ -2,41 +2,58 @@ package controller;
 
 import dao.FaturaDAO;
 import model.Fatura;
+import model.Vaga;
 import model.Veiculo;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class FaturaController {
-    private FaturaDAO faturaDAO;  // Dependência do DAO para persistir as faturas
 
-    // Construtor que recebe o DAO de faturas
+    private FaturaDAO faturaDAO;
+    private EstacionamentoController estacionamentoController;
+
+    // Construtor que recebe o DAO de faturas e o controlador de estacionamento
     public FaturaController(FaturaDAO faturaDAO) {
         this.faturaDAO = faturaDAO;
+        this.estacionamentoController = estacionamentoController;
     }
 
     // Método para gerar uma nova fatura
-    public Fatura gerarFatura(Veiculo veiculo, Date tempoInicio, Date tempoFim) {
-        // A lógica para calcular o valor da fatura pode ser personalizada
-        double valor = calcularValorFatura(tempoInicio, tempoFim);
-        Fatura fatura = new Fatura(veiculo, tempoInicio, tempoFim);
-        fatura.setValor(valor);
+    public Fatura gerarFatura(String placa, Date tempoInicial, Date tempoFinal, int tipoVaga) {
+        // Calcular o valor da fatura
+        double valor = calcularTarifa(tipoVaga, tempoInicial, tempoFinal);
 
-        // Salva a fatura no banco de dados (DAO)
+        // Criar a fatura com o valor calculado
+        Fatura fatura = new Fatura(placa, tempoInicial, tempoFinal, valor, tipoVaga);
+        // Salvar a fatura
         faturaDAO.salvar(fatura);
 
         return fatura;
     }
 
-    // Método para calcular o valor da fatura
-    private double calcularValorFatura(Date tempoInicio, Date tempoFim) {
-        // A lógica de cálculo do valor pode ser baseada na diferença entre as datas
-        long diff = tempoFim.getTime() - tempoInicio.getTime();
-        long horas = diff / (1000 * 60 * 60); // Convertendo a diferença de tempo para horas
+    // Método auxiliar para calcular a tarifa (Exemplo simples de cálculo, pode ser modificado)
+    private double calcularTarifa(int tipoVaga, Date tempoInicial, Date tempoFinal) {
+        long tempoEstacionado = tempoFinal.getTime() - tempoInicial.getTime(); // Diferença de tempo em milissegundos
+        double horasEstacionado = tempoEstacionado / (1000 * 60 * 60); // Convertendo milissegundos para horas
 
-        // Vamos assumir que a tarifa é de R$ 10 por hora
-        return horas * 10.0;
+        double tarifaBase = 10.0; // Tarifa base (pode ser modificada conforme o tipo de vaga)
+        switch (tipoVaga) {
+            case 1: // Tipo VIP
+                tarifaBase = 20.0;
+                break;
+            case 2: // Tipo Regular
+                tarifaBase = 10.0;
+                break;
+            case 3: // Tipo PCD
+                tarifaBase = 15.0;
+                break;
+            case 4: // Tipo Idoso
+                tarifaBase = 12.0;
+                break;
+        }
+
+        return tarifaBase * horasEstacionado; // Cálculo da tarifa com base no tempo
     }
 
     // Método para buscar todas as faturas
@@ -44,15 +61,29 @@ public class FaturaController {
         return faturaDAO.buscarTodas();  // Retorna todas as faturas salvas
     }
 
-    // Método para buscar faturas por data e placa
-    public List<Fatura> buscarFaturasPorDataEPlaca(Date dataInicio, Date dataFim, String placa) {
-        // Obtém todas as faturas
-        List<Fatura> todasFaturas = faturaDAO.buscarTodas();
+    // Novo método para gerar fatura com base em placa ou identificador e tempo de permanência
+    public Fatura gerarFatura(String placaOuIdentificador, double tempoPermanencia) {
+        // Procurar pela vaga usando o identificador ou placa
+        Vaga vaga = estacionamentoController.buscarVaga(placaOuIdentificador);
+        if (vaga == null) {
+            return null; // Vaga não encontrada
+        }
 
-        // Filtra as faturas por data e placa usando Stream API
-        return todasFaturas.stream()
-                .filter(fatura -> !fatura.getTempoInicio().before(dataInicio) && !fatura.getTempoFim().after(dataFim))
-                .filter(fatura -> fatura.getVeiculo().getPlaca().equalsIgnoreCase(placa))
-                .collect(Collectors.toList());
+        // Obter a placa do veículo e o tipo de vaga
+        String placa = vaga.getVeiculo().getPlaca();
+        int tipoVaga = vaga.getClass().hashCode(); // Obtém o tipo de vaga pelo hashcode
+
+        // Calcular a data final de permanência (supondo que o tempo de permanência seja em horas)
+        Date tempoFinal = new Date();
+        Date tempoInicial = new Date(tempoFinal.getTime() - (long) (tempoPermanencia * 60 * 60 * 1000)); // Calculando o tempo inicial
+
+        // Gerar e retornar a fatura
+        return gerarFatura(placa, tempoInicial, tempoFinal, tipoVaga);
+    }
+
+    public Fatura gerarFatura(String placa, double tempoPermanencia, double valor) {
+        // Aqui você pode usar um modelo de fatura para armazenar as informações
+        Veiculo veiculo = new Veiculo(placa); // Assumindo que a classe Veiculo tenha um construtor simples
+        return new Fatura(placa, tempoPermanencia, valor);
     }
 }

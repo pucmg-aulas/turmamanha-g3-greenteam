@@ -11,4 +11,8 @@ public class VagaRegular extends Vaga {
         // Retorna a tarifa padrão sem descontos para Vaga Regular
         return getTarifaBase();
     }
+    @Override
+    public String getTipoVaga() {
+        return "Regular";
+    }
 }

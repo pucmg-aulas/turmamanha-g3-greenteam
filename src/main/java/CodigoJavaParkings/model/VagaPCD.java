@@ -17,4 +17,9 @@ public class VagaPCD extends Vaga {
     public boolean isEspacoAdicional() {
         return espacoAdicional;
     }
+
+    @Override
+    public String getTipoVaga() {
+        return "PCD";
+    }
 }

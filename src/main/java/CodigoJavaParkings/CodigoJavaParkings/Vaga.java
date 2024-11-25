@@ -1,4 +1,4 @@
-package model;
+package CodigoJavaParkings;
 
 import java.util.Date;
 
@@ -10,14 +10,6 @@ public abstract class Vaga {
     private Date tempoInicial;
     private Date tempoFinal;
 
-    // Construtor para inicializar a Vaga com identificador e tarifa base
-    public Vaga(String identificador, double tarifa) {
-        this.identificador = identificador;
-        this.ocupada = false;
-        this.tarifaBase = tarifa;
-    }
-
-    // Getters e Setters
     public String getIdentificador() {
         return identificador;
     }
@@ -66,14 +58,31 @@ public abstract class Vaga {
         this.tarifaBase = tarifaBase;
     }
 
-    // Cálculo de tarifa, mas sem implementação ABSTRACT
-    public abstract double calcularTarifa();
-
-    // Método para obter o estacionamento. Este método pode ser sobrescrito nas subclasses.
-    public Estacionamento getEstacionamento() {
-        return null;  // Subclasses podem implementar se necessário
+    public Vaga(String identificador, double tarifa) {
+        this.identificador = identificador;
+        this.ocupada = false;
+        this.tarifaBase = tarifa;
     }
 
-    // Método para obter o tipo de vaga. Cada subclasse pode sobrescrever para fornecer um tipo específico.
-    public abstract String getTipoVaga();
+    public void ocuparVaga(Veiculo veiculo) {
+        if (!ocupada) {
+            this.veiculo = veiculo;
+            this.tempoInicial = new Date(); // Registra o momento de início da ocupação
+            this.ocupada = true;
+        } else {
+            System.out.println("Vaga já está ocupada.");
+        }
+    }
+
+    public void liberarVaga() {
+        if (ocupada) {
+            this.veiculo = null;
+            this.tempoFinal = new Date(); // Registra o momento de liberação
+            this.ocupada = false;
+        } else {
+            System.out.println("Vaga já está livre.");
+        }
+    }
+
+    public abstract double calcularTarifa();
 }

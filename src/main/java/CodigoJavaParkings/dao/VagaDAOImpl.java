@@ -15,13 +15,26 @@ public class VagaDAOImpl implements VagaDAO {
 
     @Override
     public void salvar(Vaga vaga) {
+        File file = new File(FILE_NAME);
+        if (!file.exists()) {
+            try {
+                file.createNewFile(); // Cria o arquivo se não existir
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
-            // Converte a vaga em uma linha de texto formatada
+            // Começamos com o identificador da vaga, tipo e status de ocupação
             String linha = vaga.getIdentificador() + "," +
                     vaga.getClass().getSimpleName() + "," +
                     vaga.isOcupada();
 
-            // Escreve a linha no arquivo
+            // Se a vaga está ocupada, adicionamos as informações do veículo
+            if (vaga.isOcupada() && vaga.getVeiculo() != null) {
+                linha += "," + vaga.getVeiculo().getPlaca();
+            }
+
             writer.write(linha);
             writer.newLine();
         } catch (IOException e) {
@@ -29,10 +42,22 @@ public class VagaDAOImpl implements VagaDAO {
         }
     }
 
+
     @Override
     public List<Vaga> buscarTodas() {
         List<Vaga> vagas = new ArrayList<>();
 
+        // Verifica se o arquivo existe; se não, cria-o
+        File file = new File(FILE_NAME);
+        if (!file.exists()) {
+            try {
+                file.createNewFile(); // Cria o arquivo vazio
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Continua com a leitura do arquivo se ele já existe ou foi criado
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
             String linha;
             while ((linha = reader.readLine()) != null) {
@@ -47,6 +72,7 @@ public class VagaDAOImpl implements VagaDAO {
 
         return vagas;
     }
+
 
     // Método auxiliar para converter uma linha de texto em um objeto Vaga
     private Vaga converterLinhaParaVaga(String linha) {
