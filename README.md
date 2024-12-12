@@ -2,7 +2,7 @@
 # Gestão de Estacionamentos - Green Team
 
 O projeto da disciplina Laboratório de Programação Modular do nosso grupo "Green Team" tem como objetivo desenvolver um sistema de software para a gestão de estacionamentos. 
-Este repositório será atualizado periodicamente a medida que novas entregas são requisitadas.
+Este repositório será atualizado periodicamente a medida que novas entregas são requisitadas
 
 ## Alunos integrantes da equipe
 
