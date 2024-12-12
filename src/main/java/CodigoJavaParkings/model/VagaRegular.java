@@ -3,16 +3,12 @@ package model;
 public class VagaRegular extends Vaga {
 
     public VagaRegular(String identificador) {
-        super(identificador, 10.0); // Define tarifa base como 10.0
+        super(identificador, "Regular"); // Passa "Regular" como tipo para o construtor da classe pai
     }
 
     @Override
-    public double calcularTarifa() {
-        // Retorna a tarifa padrão sem descontos para Vaga Regular
-        return getTarifaBase();
-    }
-    @Override
-    public String getTipoVaga() {
-        return "Regular";
+    public double calcularTarifa(double tempoEmMinutos) {
+        double tarifaBase = 5.0; // Valor base por hora sem desconto
+        return (tempoEmMinutos / 60) * tarifaBase;
     }
 }

@@ -65,7 +65,6 @@ Cada fatura é salva no arquivo `faturas.txt` com a **placa do veículo**, **tem
 
 ```java
 import dao.FaturaDAO;
-import dao.FaturaDAOImpl;
 import model.Fatura;
 import model.Veiculo;
 

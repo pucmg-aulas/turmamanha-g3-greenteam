@@ -1,200 +1,196 @@
 package view;
 
-import controller.ArrecadacaoController;
 import controller.FaturaController;
 import controller.EstacionamentoController;
+import dao.FaturaDAOImpl;
+import dao.VagaDAOImpl;
 import model.Vaga;
 import model.Veiculo;
-import model.VagaVIP;
-import model.VagaRegular;
-import model.VagaPCD;
-import model.VagaIdoso;
 import model.Fatura;
-
+import dao.FaturaDAOImpl;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.sql.Date;  // Classe java.sql.Date
 import java.util.List;
 
 public class EstacionamentoView extends JFrame {
 
     private final EstacionamentoController estacionamentoController;
+    private final FaturaController faturaController;
     private final JTable tabelaVagas;
+    private final JTable tabelaFaturas;
 
-    public EstacionamentoView(FaturaController faturaController, ArrecadacaoController arrecadacaoController, EstacionamentoController estacionamentoController) {
+    public EstacionamentoView(EstacionamentoController estacionamentoController, MainView mainView) {
         this.estacionamentoController = estacionamentoController;
 
-        // Configuração da janela principal
+        // Inicializa o FaturaController com FaturaDAO
+        this.faturaController = new FaturaController(new FaturaDAOImpl());
+
         setTitle("Estacionamento Xulambs");
         setSize(900, 600);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Usar DISPOSE para manter a MainView ativa
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Título ou área de mensagens
-        JPanel headerPanel = new JPanel();
-        JLabel titleLabel = new JLabel("Bem-vindo ao Estacionamento Xulambs", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        headerPanel.setLayout(new BorderLayout());
-        headerPanel.add(titleLabel, BorderLayout.CENTER);
-        add(headerPanel, BorderLayout.NORTH);
-
-        // Tabela de Vagas
-        String[] colunas = {"Identificador", "Tipo de Vaga", "Placa", "Status"};
-        DefaultTableModel model = new DefaultTableModel(colunas, 0);
-        tabelaVagas = new JTable(model);
+        // Inicializar a tabela de vagas
+        String[] colunasVagas = {"Identificador", "Tipo de Vaga", "Placa", "Status"};
+        DefaultTableModel modelVagas = new DefaultTableModel(colunasVagas, 0);
+        tabelaVagas = new JTable(modelVagas);
         JScrollPane tabelaScrollPane = new JScrollPane(tabelaVagas);
         tabelaScrollPane.setPreferredSize(new Dimension(800, 200));
         add(tabelaScrollPane, BorderLayout.CENTER);
 
-        // Painel de Botões e Campos de Registro
+        // Inicializar a tabela de faturas
+        String[] colunasFaturas = {"Identificador", "Tempo de Permanência", "Valor"};
+        DefaultTableModel modelFaturas = new DefaultTableModel(colunasFaturas, 0);
+        tabelaFaturas = new JTable(modelFaturas);
+        JScrollPane tabelaFaturasScroll = new JScrollPane(tabelaFaturas);
+        tabelaFaturasScroll.setPreferredSize(new Dimension(800, 200));
+        add(tabelaFaturasScroll, BorderLayout.SOUTH);
+
+        // Painel de Botões
         JPanel sidePanel = new JPanel();
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
-        sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Adiciona margens internas
+        sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Botão para verificar vagas disponíveis
-        JButton btnVagasDisponiveis = new JButton("Verificar Vagas Disponíveis");
-        btnVagasDisponiveis.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnVagasDisponiveis.addActionListener(e -> atualizarTabelaVagas());
-        sidePanel.add(btnVagasDisponiveis);
+        JButton btnRegistrarVeiculo = new JButton("Registrar Veículo");
+        btnRegistrarVeiculo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnRegistrarVeiculo.addActionListener(e -> registrarVeiculo());
+        sidePanel.add(btnRegistrarVeiculo);
 
-        sidePanel.add(Box.createVerticalStrut(20)); // Espaçamento entre botões e campos
 
-        // Campos de entrada para registrar veículo
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new GridLayout(4, 2, 5, 5)); // Layout em grid para os campos
-        inputPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        inputPanel.add(new JLabel("Identificador da Vaga:"));
-        JTextField fieldIdentificador = new JTextField();
-        inputPanel.add(fieldIdentificador);
-
-        inputPanel.add(new JLabel("Placa do Veículo:"));
-        JTextField fieldPlaca = new JTextField();
-        inputPanel.add(fieldPlaca);
-
-        inputPanel.add(new JLabel("Tipo de Vaga:"));
-        JComboBox<String> comboTipoVaga = new JComboBox<>(new String[]{"VIP", "Regular", "PCD", "Idoso"});
-        inputPanel.add(comboTipoVaga);
-
-        sidePanel.add(inputPanel);
-
-        sidePanel.add(Box.createVerticalStrut(20)); // Espaçamento entre campos e botões
-
-        // Botão para registrar veículo
-        JButton btnRegistrar = new JButton("Registrar Veículo");
-        btnRegistrar.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnRegistrar.addActionListener(e -> {
-            String identificador = fieldIdentificador.getText();
-            String placa = fieldPlaca.getText();
-            String tipoVagaSelecionado = (String) comboTipoVaga.getSelectedItem();
-
-            // Criar veículo
-            Veiculo veiculo = new Veiculo(placa);
-
-            // Determinar tipo de vaga
-            Class<? extends Vaga> tipoVaga;
-            switch (tipoVagaSelecionado) {
-                case "VIP":
-                    tipoVaga = VagaVIP.class;
-                    break;
-                case "Regular":
-                    tipoVaga = VagaRegular.class;
-                    break;
-                case "PCD":
-                    tipoVaga = VagaPCD.class;
-                    break;
-                case "Idoso":
-                    tipoVaga = VagaIdoso.class;
-                    break;
-                default:
-                    JOptionPane.showMessageDialog(this, "Tipo de vaga inválido!");
-                    return;
-            }
-
-            // Registrar vaga
-            boolean sucesso = estacionamentoController.ocuparVaga(veiculo, tipoVaga);
-            if (sucesso) {
-                JOptionPane.showMessageDialog(this, "Veículo registrado com sucesso na vaga " + identificador);
-
-                // Atualiza a tabela de vagas
-                atualizarTabelaVagas();
-            } else {
-                JOptionPane.showMessageDialog(this, "Não foi possível registrar o veículo. Vaga ocupada ou tipo indisponível.");
-            }
-        });
-        sidePanel.add(btnRegistrar);
-
-        // Novo botão para gerar fatura
         JButton btnGerarFatura = new JButton("Gerar Fatura");
         btnGerarFatura.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnGerarFatura.addActionListener(e -> {
-            // Solicita a placa ou o identificador da vaga
-            String placaOuIdentificador = JOptionPane.showInputDialog(this, "Digite a placa do veículo ou o identificador da vaga:");
-            if (placaOuIdentificador == null || placaOuIdentificador.isEmpty()) {
-                return;
-            }
-
-            // Solicita o tempo de permanência
-            String tempoPermanenciaStr = JOptionPane.showInputDialog(this, "Digite o tempo de permanência (em minutos):");
-            if (tempoPermanenciaStr == null || tempoPermanenciaStr.isEmpty()) {
-                return;
-            }
-
-            try {
-                double tempoPermanencia = Double.parseDouble(tempoPermanenciaStr);
-
-                // Busca a vaga pelo identificador ou placa
-                Vaga vaga = estacionamentoController.buscarVaga(placaOuIdentificador);
-                if (vaga != null && vaga.isOcupada()) {
-                    // Calcular o valor da fatura (exemplo: R$ 1,00 por minuto)
-                    double valor = tempoPermanencia * 1.0; // R$ 1 por minuto de permanência
-
-                    // Criar a fatura com o valor calculado
-                    Fatura fatura = faturaController.gerarFatura(vaga.getVeiculo().getPlaca(), tempoPermanencia, valor);
-
-                    // Exibe a fatura gerada em uma janela JOptionPane
-                    JOptionPane.showMessageDialog(this, "Fatura gerada com sucesso! Valor a pagar: R$ " + String.format("%.2f", fatura.getValor()));
-                    // Exibe a fatura gerada em uma nova janela
-                    new FaturaView(fatura).setVisible(true);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Vaga não encontrada ou não está ocupada.");
-                }
-
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Tempo de permanência inválido.");
-            }
-        });
-        sidePanel.add(Box.createVerticalStrut(20)); // Espaçamento
+        btnGerarFatura.addActionListener(e -> gerarFatura());
         sidePanel.add(btnGerarFatura);
 
-        // Botão "Voltar para a Main"
-        JButton btnVoltar = new JButton("Voltar para a Main");
-        btnVoltar.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnVoltar.setForeground(Color.RED); // Opcional: destaque visual
-        btnVoltar.addActionListener(e -> {
-            this.dispose(); // Fecha a EstacionamentoView
-            MainView.main(new String[]{}); // Chama a MainView
-        });
-        sidePanel.add(Box.createVerticalStrut(20)); // Espaçamento
-        sidePanel.add(btnVoltar);
+        JButton btnListarFaturas = new JButton("ListarFaturas");
+        btnListarFaturas.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnListarFaturas.addActionListener(e -> ListarFaturas());
+        sidePanel.add(btnListarFaturas);
 
-        // Adicionar painel de botões ao frame
         add(sidePanel, BorderLayout.EAST);
+
+
+
+        atualizarTabelas();
     }
 
-    // Atualiza a tabela com as vagas do estacionamento
-    void atualizarTabelaVagas() {
-        DefaultTableModel model = (DefaultTableModel) tabelaVagas.getModel();
-        model.setRowCount(0); // Limpa a tabela
 
-        // Itera sobre as vagas e adiciona as informações
-        List<Vaga> vagas = estacionamentoController.getEstacionamento().getVagas();
+
+    private void registrarVeiculo() {
+
+        VagaDAOImpl vagaDAO = new VagaDAOImpl();
+
+        String placa = JOptionPane.showInputDialog(this, "Digite a placa do veículo:");
+        if (placa == null || placa.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Placa inválida.");
+            return;
+        }
+
+        String[] tipos = {"Regular", "VIP", "PCD", "Idoso"};
+        String tipoSelecionado = (String) JOptionPane.showInputDialog(
+                this, "Selecione o tipo de vaga:", "Registro de Veículo",
+                JOptionPane.QUESTION_MESSAGE, null, tipos, tipos[0]
+        );
+
+        if (tipoSelecionado == null) return;
+
+        boolean sucesso = estacionamentoController.ocuparVaga(new Veiculo(placa), tipoSelecionado);
+        if (sucesso) {
+            JOptionPane.showMessageDialog(this, "Veículo registrado com sucesso!");
+        } else {
+            JOptionPane.showMessageDialog(this, "Nenhuma vaga disponível para o tipo selecionado.");
+        }
+        atualizarTabelas();
+
+    }
+
+        private void gerarFatura() {
+            VagaDAOImpl vagaDAO = new VagaDAOImpl();
+            FaturaDAOImpl faturaDAO = new FaturaDAOImpl();
+
+            String identificador = JOptionPane.showInputDialog(this, "Digite o identificador da vaga:");
+            if (identificador == null || identificador.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Identificador inválido.");
+                return;
+            }
+
+            String tempoInput = JOptionPane.showInputDialog(this, "Digite o tempo de permanência (em minutos):");
+            try {
+                double tempo = Double.parseDouble(tempoInput);
+                Vaga vaga = estacionamentoController.buscarVaga(identificador);
+
+                if (vaga == null || !vaga.isOcupada()) {
+                    JOptionPane.showMessageDialog(this, "Vaga não encontrada ou já desocupada.");
+                    return;
+                }
+
+                double valor = faturaController.calcularTarifa(vaga, tempo);
+
+                Fatura fatura = new Fatura(
+                        vaga.getVeiculo(),
+                        vaga.getTempoInicial(),
+                        new Date(System.currentTimeMillis()),
+                        vaga.getTipo(),
+                        estacionamentoController.getEstacionamentoId(),
+                        valor
+                );
+
+                vagaDAO.inserirVaga(vaga);
+                faturaDAO.inserirFatura(fatura);
+
+                JOptionPane.showMessageDialog(this, "Fatura gerada com sucesso! Valor: R$ " + String.format("%.2f", valor));
+
+                estacionamentoController.liberarVaga(identificador);  // Libera a vaga após o pagamento
+                atualizarTabelas();  // Atualiza a tabela de faturas
+
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Tempo inválido.");
+            }
+        }
+
+    private void atualizarTabelas() {
+        atualizarTabelaVagas();
+    }
+
+    void atualizarTabelaVagas() {
+
+        DefaultTableModel model = (DefaultTableModel) tabelaVagas.getModel();
+        model.setRowCount(0);
+
+        List<Vaga> vagas = estacionamentoController.getVagas();
         for (Vaga vaga : vagas) {
             String status = vaga.isOcupada() ? "Ocupada" : "Disponível";
-            String placa = vaga.isOcupada() ? vaga.getVeiculo().getPlaca() : "N/A";
-            String tipoVaga = vaga.getClass().getSimpleName();
-            model.addRow(new Object[]{vaga.getIdentificador(), tipoVaga, placa, status});
+            String placa = vaga.isOcupada() ? Veiculo.getPlaca() : "N/A";
+            model.addRow(new Object[]{vaga.getIdentificador(), vaga.getClass().getSimpleName(), placa, status});
         }
     }
+    private void retornarParaMainView() {
+        dispose();
+        SwingUtilities.invokeLater(() -> new MainView().setVisible(true));
+    }
+    private void ListarFaturas() {
+        List<Fatura> faturas;
+        try {
+            FaturaDAOImpl faturaDAO = new FaturaDAOImpl();
+            faturas = faturaDAO.listarFaturas();
+            preencherTabelaFaturas(faturas); // Método para preencher a tabela
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao listar faturas: " + e.getMessage());
+        }
+    }
+
+    private void preencherTabelaFaturas(List<Fatura> faturas) {
+        DefaultTableModel model = (DefaultTableModel) tabelaFaturas.getModel();
+        model.setRowCount(0);
+
+        for (Fatura fatura : faturas) {
+            model.addRow(new Object[]{fatura.getIdentificador(), fatura.getTempoPermanencia(), fatura.getValor()});
+        }
+    }
+
+
 }

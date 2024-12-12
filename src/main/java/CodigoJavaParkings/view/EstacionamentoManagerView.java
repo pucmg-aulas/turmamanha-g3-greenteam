@@ -107,7 +107,7 @@ public class EstacionamentoManagerView extends JFrame {
                 }
 
                 // Registrar o veículo na vaga
-                boolean sucesso = estacionamentoController.ocuparVaga(veiculo, tipoVaga);
+                boolean sucesso = estacionamentoController.ocuparVaga(veiculo, String.valueOf(tipoVaga));
                 if (sucesso) {
                     JOptionPane.showMessageDialog(EstacionamentoManagerView.this, "Veículo registrado com sucesso na vaga " + identificador);
                     // Atualizar a tabela de vagas na EstacionamentoView

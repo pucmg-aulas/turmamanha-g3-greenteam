@@ -1,12 +1,12 @@
 package dao;
 
-import model.Vaga;
-import model.VagaVIP;
-import model.VagaIdoso;
-import model.VagaPCD;
-import model.VagaRegular;
+import BD.BancoDeDados;
+import model.*;
 
 import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +74,7 @@ public class VagaDAOImpl implements VagaDAO {
     }
 
 
+
     // Método auxiliar para converter uma linha de texto em um objeto Vaga
     private Vaga converterLinhaParaVaga(String linha) {
         String[] dados = linha.split(","); // Divide a linha em partes
@@ -111,5 +112,46 @@ public class VagaDAOImpl implements VagaDAO {
             vaga.setOcupada(ocupada); // Define o estado de ocupação da vaga
         }
         return vaga;
+    }
+
+
+
+    // Banco De Dados
+
+    @Override
+    public void inserirVaga(Vaga vaga) {
+        String comando = "INSERT INTO vaga (id,Placa_carro,tipo,ocupada) VALUES (?,?,?,?)";
+        Connection conn = BancoDeDados.getConexao();
+        if (conn == null) {
+            System.err.println("Erro: Conexão com o banco de dados não foi estabelecida.");
+            return;
+        }
+        try (PreparedStatement stmt = conn.prepareStatement(comando)) {
+            stmt.setInt(1, Veiculo.getId());
+            stmt.setString(2, Veiculo.getPlaca());
+            stmt.setString(3, vaga.getTipo());
+            stmt.setBoolean(4, vaga.isOcupada());
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Vaga inserida com sucesso!");
+            } else {
+                System.out.println("Falha ao inserir a vaga.");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao inserir vaga: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void vagaRegularComMaiorFatura(Vaga vaga) {
+        String sql = "";
+    }
+
+    @Override
+    public void listarVagas() {
+
     }
 }

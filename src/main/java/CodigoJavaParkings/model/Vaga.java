@@ -6,24 +6,19 @@ public abstract class Vaga {
     private String identificador;
     private boolean ocupada;
     private Veiculo veiculo;
-    private double tarifaBase;
     private Date tempoInicial;
-    private Date tempoFinal;
+    private String tipo; // Adicionando tipo
 
-    // Construtor para inicializar a Vaga com identificador e tarifa base
-    public Vaga(String identificador, double tarifa) {
+    public Vaga(String identificador, String tipo) {
         this.identificador = identificador;
         this.ocupada = false;
-        this.tarifaBase = tarifa;
+        this.veiculo = null;
+        this.tempoInicial = null;
+        this.tipo = tipo; // Inicializa o tipo
     }
 
-    // Getters e Setters
     public String getIdentificador() {
-        return identificador;
-    }
-
-    public void setIdentificador(String identificador) {
-        this.identificador = identificador;
+        return this.identificador;
     }
 
     public boolean isOcupada() {
@@ -50,30 +45,24 @@ public abstract class Vaga {
         this.tempoInicial = tempoInicial;
     }
 
-    public Date getTempoFinal() {
-        return tempoFinal;
+    public String getTipo() {
+        return tipo; // Retorna o tipo da vaga
     }
 
-    public void setTempoFinal(Date tempoFinal) {
-        this.tempoFinal = tempoFinal;
+    // Método abstrato para calcular a tarifa, que será implementado nas subclasses concretas
+    public abstract double calcularTarifa(double tempoEmMinutos);
+
+    // Método para verificar se a vaga está ocupada ou não
+    public void ocupar(Veiculo veiculo) {
+        this.veiculo = veiculo;
+        this.ocupada = true;
+        this.tempoInicial = new Date(); // Marca o tempo de ocupação
     }
 
-    public double getTarifaBase() {
-        return tarifaBase;
+    // Método para liberar a vaga
+    public void liberar() {
+        this.veiculo = null;
+        this.ocupada = false;
+        this.tempoInicial = null; // Reseta o tempo inicial
     }
-
-    public void setTarifaBase(double tarifaBase) {
-        this.tarifaBase = tarifaBase;
-    }
-
-    // Cálculo de tarifa, mas sem implementação ABSTRACT
-    public abstract double calcularTarifa();
-
-    // Método para obter o estacionamento. Este método pode ser sobrescrito nas subclasses.
-    public Estacionamento getEstacionamento() {
-        return null;  // Subclasses podem implementar se necessário
-    }
-
-    // Método para obter o tipo de vaga. Cada subclasse pode sobrescrever para fornecer um tipo específico.
-    public abstract String getTipoVaga();
 }

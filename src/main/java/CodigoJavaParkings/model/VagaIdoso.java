@@ -3,16 +3,12 @@ package model;
 public class VagaIdoso extends Vaga {
 
     public VagaIdoso(String identificador) {
-        super(identificador, 10.0); // Definindo tarifa base como 10.0
+        super(identificador, "Idoso"); // Passa "Idoso" como tipo para o construtor da classe pai
     }
 
     @Override
-    public double calcularTarifa() {
-        // Aplica 15% de desconto para Vaga Idoso
-        return getTarifaBase() * 0.85;
-    }
-    @Override
-    public String getTipoVaga() {
-        return "idoso";
+    public double calcularTarifa(double tempoEmMinutos) {
+        double tarifaBase = 3.0; // Valor base por hora com desconto
+        return (tempoEmMinutos / 60) * tarifaBase;
     }
 }

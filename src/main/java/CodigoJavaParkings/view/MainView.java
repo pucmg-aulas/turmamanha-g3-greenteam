@@ -1,101 +1,86 @@
 package view;
 
+import BD.BancoDeDados;
 import controller.ArrecadacaoController;
-import controller.FaturaController;
 import controller.EstacionamentoController;
-import dao.FaturaDAO;
-import dao.FaturaDAOImpl;
-import dao.VagaDAO;
-import dao.VagaDAOImpl;
+import dao.*;
 import model.Estacionamento;
-import model.Veiculo;
+import model.Fatura;
+import view.ArrecadacaoView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class MainView {
+    private static JFrame mainFrame;
 
-    public static void main(String[] args) {
-        // Criação dos DAOs necessários
+    public static void main(String[] args) {  // Corrigido: Removido <ArrecadacaoView>
+        // Instâncias de DAO
         FaturaDAO faturaDAO = new FaturaDAOImpl();
-        VagaDAO vagaDAO = new VagaDAOImpl(); // Instanciando o VagaDAO para persistência de vagas
+        VagaDAO vagaDAO = new VagaDAOImpl();
+        BancoDeDados bancoDeDados = new BancoDeDados();
 
-        // Criação das instâncias dos controladores
-        ArrecadacaoController arrecadacaoController = new ArrecadacaoController();
-        FaturaController faturaController = new FaturaController(faturaDAO);
+        List<Fatura> faturas = faturaDAO.listarFaturas();  // Obtém a lista de faturas
 
-        // Criação do estacionamento com id, nome e número de vagas predefinido
+        // Instância do Estacionamento
         Estacionamento estacionamento = new Estacionamento(1, "Estacionamento Xulambs", 60);
 
-        // Criação do EstacionamentoController com estacionamento e vagaDAO
-        EstacionamentoController estacionamentoController = new EstacionamentoController(estacionamento, vagaDAO);
+        // Instâncias dos Controllers
+        ArrecadacaoController arrecadacaoController = new ArrecadacaoController(faturaDAO);
+        EstacionamentoController estacionamentoController = new EstacionamentoController(vagaDAO);
 
-        // Configuração da janela principal
-        JFrame mainFrame = new JFrame("Sistema de Estacionamento");
-        mainFrame.setSize(500, 600); // Aumentei a altura para acomodar o footer
+        // Configurações da janela principal
+        mainFrame = new JFrame("Sistema de Estacionamento");
+        mainFrame.setSize(500, 600);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setLocationRelativeTo(null); // Centraliza a janela
+        mainFrame.setLocationRelativeTo(null);  // Centraliza a janela
         mainFrame.setLayout(new BorderLayout(10, 10));
 
-        // Definir o ícone da janela
-        mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage("path_to_icon.png")); // Adicione o caminho do ícone
+        // Definindo o ícone da janela
+        mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage("path_to_icon.png"));  // Ajuste o caminho conforme necessário
 
-        // Adicionando um título na parte superior da janela
+        // Título da janela
         JLabel titleLabel = new JLabel("Bem-vindo ao Sistema de Estacionamento", JLabel.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));  // Título com fonte maior e negrito
-        titleLabel.setForeground(Color.DARK_GRAY);  // Cor do título
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setForeground(Color.DARK_GRAY);
         mainFrame.add(titleLabel, BorderLayout.NORTH);
 
-        // Painel central com botões
+        // Painel de botões
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));  // Layout de fluxo centralizado
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
 
-        // Estilizando e adicionando os botões
+        // Botão Arrecadação
         JButton arrecadacaoButton = new JButton("Arrecadação");
         estilizarBotao(arrecadacaoButton);
         arrecadacaoButton.addActionListener(e -> {
+            // Cria e exibe a tela de Arrecadação
             ArrecadacaoView arrecadacaoView = new ArrecadacaoView(arrecadacaoController);
-            arrecadacaoView.setVisible(true);
+            arrecadacaoView.setVisible(true);  // Torna a janela visível
         });
 
-        JButton faturaButton = new JButton("Faturas");
-        estilizarBotao(faturaButton);
-        faturaButton.addActionListener(e -> {
-            // Passando o identificador do estacionamento para a FaturaView
-            FaturaView faturaView = new FaturaView(faturaController, estacionamento.getId());
-            faturaView.setVisible(true);
-        });
-
-        JButton estacionamentoManagerButton = new JButton("Gerenciar Estacionamento");
-        estilizarBotao(estacionamentoManagerButton);
-        estacionamentoManagerButton.addActionListener(e -> {
-            EstacionamentoManagerView estacionamentoManagerView = new EstacionamentoManagerView(estacionamentoController);
-            estacionamentoManagerView.setVisible(true);
-        });
-
+        // Botão Estacionamento
         JButton estacionamentoButton = new JButton("Estacionamento");
         estilizarBotao(estacionamentoButton);
         estacionamentoButton.addActionListener(e -> {
-            EstacionamentoView estacionamentoView = new EstacionamentoView(faturaController, arrecadacaoController, estacionamentoController);
+            EstacionamentoView estacionamentoView = new EstacionamentoView(estacionamentoController, new MainView());
             estacionamentoView.setVisible(true);
         });
 
         // Adicionando os botões ao painel
         buttonPanel.add(arrecadacaoButton);
-        buttonPanel.add(faturaButton);
-        buttonPanel.add(estacionamentoManagerButton);
         buttonPanel.add(estacionamentoButton);
 
         // Adicionando o painel de botões ao centro da janela
         mainFrame.add(buttonPanel, BorderLayout.CENTER);
 
-        // Adicionando o footer (rodapé)
+        // Rodapé da janela
         JPanel footerPanel = new JPanel();
         footerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        footerPanel.setBackground(new Color(220, 220, 220)); // Fundo suave para o rodapé
+        footerPanel.setBackground(new Color(220, 220, 220));  // Cor de fundo do rodapé
         JLabel footerLabel = new JLabel("© 2024 Sistema de Estacionamento - Todos os direitos reservados");
-        footerLabel.setFont(new Font("Arial", Font.ITALIC, 12)); // Texto em itálico
-        footerLabel.setForeground(Color.DARK_GRAY); // Cor do texto do rodapé
+        footerLabel.setFont(new Font("Arial", Font.ITALIC, 12));  // Texto em itálico
+        footerLabel.setForeground(Color.DARK_GRAY);
         footerPanel.add(footerLabel);
         mainFrame.add(footerPanel, BorderLayout.SOUTH);
 
@@ -103,13 +88,18 @@ public class MainView {
         mainFrame.setVisible(true);
     }
 
-    // Método para estilizar os botões, para evitar repetição de código
+    // Método para estilizar os botões
     private static void estilizarBotao(JButton botao) {
-        botao.setPreferredSize(new Dimension(200, 40));  // Tamanho fixo
-        botao.setFont(new Font("Arial", Font.PLAIN, 14));  // Fonte dos botões
-        botao.setBackground(new Color(34, 193, 195));  // Cor de fundo do botão
+        botao.setPreferredSize(new Dimension(200, 40));  // Tamanho fixo do botão
+        botao.setFont(new Font("Arial", Font.PLAIN, 14));  // Fonte
+        botao.setBackground(new Color(34, 193, 195));  // Cor de fundo
         botao.setForeground(Color.WHITE);  // Cor do texto
-        botao.setFocusPainted(false);  // Remover o foco (contorno) quando pressionado
-        botao.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true)); // Borda arredondada
+        botao.setFocusPainted(false);  // Remover foco do botão
+        botao.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));  // Borda arredondada
+    }
+
+    // Método para controlar a visibilidade da janela principal
+    public static void setVisible(boolean b) {
+        mainFrame.setVisible(b);
     }
 }

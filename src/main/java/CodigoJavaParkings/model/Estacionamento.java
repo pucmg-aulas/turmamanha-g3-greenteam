@@ -10,13 +10,14 @@ public class Estacionamento {
     private int id;  // Identificador único para o estacionamento
 
     // Construtor agora também recebe um id
-    public Estacionamento(int i, String nome, int numeroPreDeterminadoVagas) {
-        this.id = id;
+    public Estacionamento(int id, String nome, int numeroPreDeterminadoVagas) {
+        this.id = id; // Corrigido para usar o parâmetro recebido
         this.nome = nome;
         this.numeroPreDeterminadoVagas = numeroPreDeterminadoVagas;
         this.vagas = new ArrayList<>();
-        gerarVagas(); // Chama o método para gerar as vagas ao inicializar o estacionamento
+        gerarVagas();
     }
+
 
     // Getter e Setter para id
     public int getId() {
